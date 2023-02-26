@@ -4,6 +4,16 @@ const header = document.querySelector('.header');
 const form = document.querySelector('#form');
 const input = document.querySelector('#inputCity');
 
+function removeCard() {
+  const prevCard = document.querySelector('.card');
+  if (prevCard) prevCard.remove();
+}
+
+function showError (errorMessage) {
+  const html = `<div class="card">${errorMessage}</div>`;
+  header.insertAdjacentHTML('afterEnd', html);
+}
+
 form.onsubmit = function (event) {
   event.preventDefault();
 
@@ -16,29 +26,29 @@ form.onsubmit = function (event) {
     })
     .then((data) => {
       if (data.error) {
-        const prevCard = document.querySelector('card');
-        const html = `<div class="card">${data.error.message}</div>`;
-        if (prevCard) {
-          prevCard.remove();
-        }
-        header.insertAdjacentHTML('afterend', html);
-        if (prevCard) prevCard.remove();
+        removeCard();
+        showError(data.error.message);
       } else {
-        const prevCard = document.querySelector('.card');
-        if (prevCard) prevCard.remove();
+        removeCard();
+        showCard(data.location.name, 
+                  data.location.country,
+                  data.current.temp_c,
+                  data.current.condition.text);
 
-        const html = `
+        function showCard (name, country, temp, condition) {
+          const html = `
             <div class="card">
               <h2 class="card-city">
-                ${data.location.name}<span>${data.location.country}</span>
-              <h2>
-              <div class="card-weather">${data.current.temp_c}</div>
+                ${name}<span>${country}</span>
+              </h2>
+              <div class="card-weather">${temp}</div>
               <img src="./img/example.png" alt="Weather">
-              <div class="card-description">${data.current.condition.text}</div>
+              <div class="card-description">${condition}</div>
             </div>
           `;
 
-        header.insertAdjacentHTML('afterend', html);
+          header.insertAdjacentHTML('afterEnd', html);
+        }
         
       }
     })
